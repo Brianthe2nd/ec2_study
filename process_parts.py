@@ -9,12 +9,12 @@ import sys
 PARTS_DIR = "parts"
 BRANCH = "main"
 AWS_REGION = "eu-north-1"
-AMI_ID = "ami-0955d1e82085ce3e8"
+AMI_ID = "ami-0c4fc5dcabc9df21d"
 INSTANCE_TYPE = "t3.small"
 KEY_NAME = "my_c71"
 SSH_KEY_FILE = os.path.expanduser("C:/Users/Brayo/Downloads/my_c71.pem")
 SEC_GROUP_NAME = "allow-ssh-from-me"
-INSTANCE_USER = "admin"  # Change if using Ubuntu (use 'ubuntu')
+INSTANCE_USER = "ec2-user"
 
 ec2 = boto3.client("ec2", region_name=AWS_REGION)
 
@@ -22,49 +22,49 @@ def run(cmd):
     print(f"$ {cmd}")
     subprocess.run(cmd, shell=True, check=True)
 
-# def ensure_security_group():
-#     """Ensure a security group exists that allows SSH."""
-#     groups = ec2.describe_security_groups(Filters=[{"Name":"group-name","Values":[SEC_GROUP_NAME]}])
-#     if groups["SecurityGroups"]:
-#         return groups["SecurityGroups"][0]["GroupId"]
-
-#     sg = ec2.create_security_group(
-#         GroupName=SEC_GROUP_NAME,
-#         Description="Allow SSH"
-#     )
-#     sg_id = sg["GroupId"]
-#     my_ip = subprocess.check_output("curl -s https://checkip.amazonaws.com", shell=True).decode().strip()
-#     ec2.authorize_security_group_ingress(
-#         GroupId=sg_id,
-#         IpPermissions=[{
-#             "IpProtocol":"tcp","FromPort":22,"ToPort":22,
-#             "IpRanges":[{"CidrIp":f"{my_ip}/32"}]
-#         }]
-#     )
-#     return sg_id
-
 def ensure_security_group():
-    """Ensure a security group exists that allows SSH from all IPs."""
-    groups = ec2.describe_security_groups(Filters=[{"Name": "group-name", "Values": [SEC_GROUP_NAME]}])
+    """Ensure a security group exists that allows SSH."""
+    groups = ec2.describe_security_groups(Filters=[{"Name":"group-name","Values":[SEC_GROUP_NAME]}])
     if groups["SecurityGroups"]:
         return groups["SecurityGroups"][0]["GroupId"]
 
     sg = ec2.create_security_group(
         GroupName=SEC_GROUP_NAME,
-        Description="Allow SSH from anywhere"
+        Description="Allow SSH"
     )
     sg_id = sg["GroupId"]
-
+    my_ip = subprocess.check_output("curl -s https://checkip.amazonaws.com", shell=True).decode().strip()
     ec2.authorize_security_group_ingress(
         GroupId=sg_id,
         IpPermissions=[{
-            "IpProtocol": "tcp",
-            "FromPort": 22,
-            "ToPort": 22,
-            "IpRanges": [{"CidrIp": "0.0.0.0/0"}]
+            "IpProtocol":"tcp","FromPort":22,"ToPort":22,
+            "IpRanges":[{"CidrIp":f"{my_ip}/32"}]
         }]
     )
     return sg_id
+
+# def ensure_security_group():
+#     """Ensure a security group exists that allows SSH from all IPs."""
+#     groups = ec2.describe_security_groups(Filters=[{"Name": "group-name", "Values": [SEC_GROUP_NAME]}])
+#     if groups["SecurityGroups"]:
+#         return groups["SecurityGroups"][0]["GroupId"]
+
+#     sg = ec2.create_security_group(
+#         GroupName=SEC_GROUP_NAME,
+#         Description="Allow SSH from anywhere"
+#     )
+#     sg_id = sg["GroupId"]
+
+#     ec2.authorize_security_group_ingress(
+#         GroupId=sg_id,
+#         IpPermissions=[{
+#             "IpProtocol": "tcp",
+#             "FromPort": 22,
+#             "ToPort": 22,
+#             "IpRanges": [{"CidrIp": "0.0.0.0/0"}]
+#         }]
+#     )
+#     return sg_id
 
 
 def launch_instance(sg_id):
@@ -173,7 +173,7 @@ def ssh_and_fetch(ip):
 def main():
     sg_id = ensure_security_group()
 
-    for part in sorted(os.listdir(PARTS_DIR))[:1]:
+    for part in sorted(os.listdir(PARTS_DIR)):
         if not part.endswith(".csv"): continue
         # part_path = os.path.join(PARTS_DIR, part)
         # part_path = PARTS_DIR + "/" + part
