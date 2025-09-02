@@ -116,6 +116,6 @@ pip install -r requirements.txt
 
 # Run main.py in background
 echo "Running main.py in foreground..."
-# nohup .venv/bin/python main.py > main.log 2>&1 &
+nohup .venv/bin/python main.py > main.log 2>&1 &
 
-.venv/bin/python driver.py 
+# .venv/bin/python driver.py 
