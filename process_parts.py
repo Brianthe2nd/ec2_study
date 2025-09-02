@@ -137,7 +137,7 @@ def ssh_and_fetch(ip):
     print("Checking if main.py started...")
     started = False
     for _ in range(30):  # check up to 30 times (30s max)
-        stdin, stdout, stderr = ssh.exec_command("pgrep -f main.py")
+        stdin, stdout, stderr = ssh.exec_command("pgrep -f driver.py")
         pid = stdout.read().decode().strip()
         if pid:
             print(f"main.py is running with PID {pid}")

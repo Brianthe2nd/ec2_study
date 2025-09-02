@@ -99,6 +99,9 @@ echo "Installing python3-venv"
 # sudo apt install -y python3-venv
 sudo yum install -y python3 python3-virtualenv
 
+echo "installing GL lib"
+sudo yum install -y mesa-libGL
+
 
 
 echo "Creating Python virtual environment..."
@@ -108,6 +111,8 @@ source .venv/bin/activate
 echo "installing setup tools"
 pip3 install --upgrade setuptools
 
+
+
 echo "Installing camgear"
 pip install -U vidgear[core]
 
@@ -116,6 +121,6 @@ pip install -r requirements.txt
 
 # Run main.py in background
 echo "Running main.py in foreground..."
-nohup .venv/bin/python main.py > main.log 2>&1 &
+nohup .venv/bin/python driver.py > main.log 2>&1 &
 
 # .venv/bin/python driver.py 
