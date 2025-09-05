@@ -7,7 +7,7 @@ set -e  # exit if any command fails
 
 #!/bin/bash
 SWAPFILE=/swapfile
-SIZE=2G
+SIZE=4G
 
 # Check if swapfile already exists
 if [ -f "$SWAPFILE" ]; then
@@ -120,7 +120,7 @@ echo "Installing requirements"
 pip install -r requirements.txt
 
 # Run main.py in background
-echo "Running main.py in foreground..."
+echo "Running main.py in background..."
 nohup .venv/bin/python driver.py > main.log 2>&1 &
 
 # .venv/bin/python driver.py 
